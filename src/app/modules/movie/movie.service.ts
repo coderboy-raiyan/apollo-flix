@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import ApiError from "../../errors/ApiError";
-import { TMovie } from "./movie.interface";
+import { TMovie, TQueySearchOptions } from "./movie.interface";
 import Movie from "./movie.model";
 
 const createMovieToDB = async (movie: TMovie) => {
@@ -46,11 +46,25 @@ const deleteMovieFromDB = async (movieId: string) => {
   await Movie.findByIdAndUpdate(movieId, { isDeleted: true });
 };
 
+const searchMovieFromDB = async (queries: TQueySearchOptions) => {
+  let query: any = [];
+
+  if (queries.title) {
+    query.push({ title: { $regex: queries.title, $options: "i" } });
+  }
+  if (queries.description) {
+    query.push({ description: { $regex: queries.description } });
+  }
+  const result = await Movie.find({ $or: query });
+  return result;
+};
+
 const MovieService = {
   createMovieToDB,
   getAllMoviesFromDB,
   getSingleMovieFromDB,
   updateMovieToDB,
   deleteMovieFromDB,
+  searchMovieFromDB,
 };
 export default MovieService;

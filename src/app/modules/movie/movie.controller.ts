@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import catchAsyncError from "../../utils/catchAsyncError";
+import pick from "../../utils/pick";
+import { TQueySearchOptions } from "./movie.interface";
 import MovieService from "./movie.service";
 
 const createMovie = catchAsyncError(async (req: Request, res: Response) => {
@@ -53,12 +55,27 @@ const deleteMovie = catchAsyncError(async (req: Request, res: Response) => {
   });
 });
 
+const searchMovie = catchAsyncError(async (req: Request, res: Response) => {
+  const query = pick<TQueySearchOptions, keyof TQueySearchOptions>(req.query, [
+    "title",
+    "description",
+    "genre",
+  ]);
+  const result = await MovieService.searchMovieFromDB(query);
+  return res.status(httpStatus.OK).json({
+    success: true,
+    message: "Movies fetched successfully!",
+    data: result,
+  });
+});
+
 const MovieController = {
   createMovie,
   getAllMovies,
   getSingleMovie,
   updateMovie,
   deleteMovie,
+  searchMovie,
 };
 
 export default MovieController;

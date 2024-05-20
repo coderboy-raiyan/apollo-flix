@@ -26,3 +26,9 @@ export type TMovieModel = Model<
 > & {
   createSlug(movie: TMovie): string;
 };
+
+export type TQueySearchOptions = {
+  title?: string;
+  description?: string;
+  genre?: string;
+};
