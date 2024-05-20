@@ -1,5 +1,7 @@
+import { format } from "date-fns";
 import { Schema, model } from "mongoose";
-import { TMovie, TReview } from "./movie.interface";
+import slugify from "slugify";
+import { TMovie, TMovieMethods, TMovieModel, TReview } from "./movie.interface";
 
 const reviewSchema = new Schema<TReview>({
   email: {
@@ -16,7 +18,7 @@ const reviewSchema = new Schema<TReview>({
   },
 });
 
-const movieSchema = new Schema<TMovie>({
+const movieSchema = new Schema<TMovie, TMovieModel, TMovieMethods>({
   title: {
     type: String,
     required: true,
@@ -52,6 +54,21 @@ const movieSchema = new Schema<TMovie>({
   ],
 });
 
-const Movie = model<TMovie>("Movie", movieSchema);
+movieSchema.static("createSlug", async function (movie: TMovie) {
+  const slug =
+    slugify(movie.title, { lower: true }) +
+    "-" +
+    format(movie.releaseDate, "dd-MM-yyyy") +
+    "-" +
+    movie.genre.toLocaleLowerCase();
+  return slug;
+});
+
+movieSchema.pre("find", function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+const Movie = model<TMovie, TMovieModel>("Movie", movieSchema);
 
 export default Movie;
