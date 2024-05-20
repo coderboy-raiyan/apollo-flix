@@ -69,6 +69,17 @@ const searchMovie = catchAsyncError(async (req: Request, res: Response) => {
   });
 });
 
+const getTrendingMovies = catchAsyncError(
+  async (req: Request, res: Response) => {
+    const result = await MovieService.getTrendingMoviesFromDB();
+    return res.status(httpStatus.OK).json({
+      success: true,
+      message: "Trending movies fetched successfully!",
+      data: result,
+    });
+  }
+);
+
 const MovieController = {
   createMovie,
   getAllMovies,
@@ -76,6 +87,7 @@ const MovieController = {
   updateMovie,
   deleteMovie,
   searchMovie,
+  getTrendingMovies,
 };
 
 export default MovieController;

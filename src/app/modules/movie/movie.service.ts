@@ -59,6 +59,11 @@ const searchMovieFromDB = async (queries: TQueySearchOptions) => {
   return result;
 };
 
+const getTrendingMoviesFromDB = async () => {
+  const result = await Movie.find({ viewCount: { $gt: 5 } });
+  return result;
+};
+
 const MovieService = {
   createMovieToDB,
   getAllMoviesFromDB,
@@ -66,5 +71,6 @@ const MovieService = {
   updateMovieToDB,
   deleteMovieFromDB,
   searchMovieFromDB,
+  getTrendingMoviesFromDB,
 };
 export default MovieService;
